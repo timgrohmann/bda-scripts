@@ -9,7 +9,6 @@ client = MongoClient()
 pp = client['bigdata']['corona']
 
 for message in consumer:
-    print('incoming message')
     values = list(csv.reader([message.value.decode('utf-8')], delimiter=','))[0]
 
     # print(values)
