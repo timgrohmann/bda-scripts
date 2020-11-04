@@ -3,7 +3,7 @@ import kafka
 producer = kafka.KafkaProducer()
 
 dataset = open('data/frankfurt a.m.-goethestraße-20180930-20201031-day.csv', encoding='utf-8')
-lines = dataset.readlines()
+lines = dataset.readlines()[1:]
 
 for i, line in enumerate(lines):
     print(line)
