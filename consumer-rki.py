@@ -3,6 +3,8 @@ from pymongo import MongoClient
 import csv
 from datetime import datetime
 
+# docker run -p 27017:27017 -v 
+
 consumer = kafka.KafkaConsumer('rki')
 
 client = MongoClient()
@@ -13,26 +15,29 @@ for message in consumer:
 
     # print(values)
     try:
-        pp.insert_one({
-            'IdBundesland': int(values[0]),
-            'Bundesland': values[1],
-            'Landkreis': values[2],
-            'Altersgruppe': values[3],
-            'Geschlecht': values[4],
-            'AnzahlFall': int(values[5]),
-            'AnzahlTodesfall': int(values[6]),
-            'ObjectId': values[7],
-            'IdLandkreis': values[8],
-            'Altersgruppe2': values[9],
-            'Refdatum': datetime.fromtimestamp(int(values[10]) // 1000),
-            'Meldedatum': datetime.fromtimestamp(int(values[11]) // 1000),
-            'IstErkrankungsbeginn': int(values[12]),
-            'NeuerFall': int(values[13]),
-            'NeuerTodesfall': int(values[14]),
-            'NeuGenesen': (values[15]),
-            'AnzahlGenesen': int(values[16]),
-            'Datenstand': values[17]
-        })
+        neuerFall = int(values[11])
+
+        if (neuerFall == 1):
+            pp.insert_one({
+                'FID': values[0],
+                'IdBundesland': int(values[1]),
+                'Bundesland': values[2],
+                'Landkreis': values[3],
+                'Altersgruppe': values[4],
+                'Geschlecht': values[5],
+                'AnzahlFall': int(values[6]),
+                'AnzahlTodesfall': int(values[7]),
+                'Meldedatum': datetime.strptime(values[8], '%Y/%m/%d %H:%M:%S'),
+                'IdLandkreis': values[9],
+                'Datenstand': values[10],
+                'NeuerFall': neuerFall,
+                'NeuerTodesfall': int(values[12]),
+                'Refdatum':datetime.strptime(values[13], '%Y/%m/%d %H:%M:%S'),
+                'NeuGenesen': (values[14]),
+                'AnzahlGenesen': int(values[15]),
+                'IstErkrankungsbeginn': int(values[16]),
+                'Altersgruppe2': values[17]
+            })
     except Exception as e:
         print(e)
         print(values)
