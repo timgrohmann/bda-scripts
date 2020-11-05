@@ -3,12 +3,16 @@ from pymongo import MongoClient
 import json
 from datetime import datetime
 
-consumer = kafka.KafkaConsumer('rki')
+consumer = kafka.KafkaConsumer('corona-http')
 
 client = MongoClient()
 pp = client['bigdata']['corona-deutschland']
 
+count = 0
+
 for message in consumer:
+    count += 1
+    print('Got new message: #', count)
     values = json.loads(message.value.decode('utf-8'))
     try:
         pp.insert_one({
