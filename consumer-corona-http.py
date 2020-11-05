@@ -9,10 +9,7 @@ client = MongoClient()
 pp = client['bigdata']['corona-deutschland']
 
 for message in consumer:
-    print('fickn')
     values = json.loads(message.value.decode('utf-8'))
-    print(values)
-
     try:
         pp.insert_one({
             'Country': values['Country'],
