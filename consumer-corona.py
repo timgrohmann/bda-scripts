@@ -6,7 +6,7 @@ from datetime import datetime
 consumer = kafka.KafkaConsumer('corona')
 
 client = MongoClient()
-pp = client['bigdata']['corona-deutschland']
+collection = client['bigdata']['corona-deutschland']
 
 count = 0
 
@@ -15,7 +15,7 @@ for message in consumer:
     print('Got new message: #', count)
     values = json.loads(message.value.decode('utf-8'))
     try:
-        pp.insert_one({
+        collection.insert_one({
             'Country': values['Country'],
             'CountryCode': values['CountryCode'],
             'Cases': values['Cases'],
