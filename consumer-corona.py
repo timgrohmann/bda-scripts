@@ -3,7 +3,7 @@ from pymongo import MongoClient
 import json
 from datetime import datetime
 
-consumer = kafka.KafkaConsumer('corona-http')
+consumer = kafka.KafkaConsumer('corona')
 
 client = MongoClient()
 pp = client['bigdata']['corona-deutschland']
