@@ -4,6 +4,8 @@
 
 ## 2. Datenquellen
 
+In dem Projekt werden insgesamt zwei Datenquellen verwendet, welche im Folgenden näher erläutert werden sollen.
+
 ### 2.1. Passantenfrequenzen
 *von Tim Grohmann*
 
@@ -54,6 +56,73 @@ Als Beispiel soll das Objekt für den 22. Juli 2020 (generiert am 05. November 2
 ### 3.1. Verwendete Technologien
 
 ### 3.2. Importieren der Daten in die Datenbank mit Kafka
+*von Niclas Kaufmann*
+
+Die Datenquellen (beschrieben in Kapitel 2) werden mit Hilfe von Kafka in die Datenbank geladen. Zuerst lädt der Producer die Datenquelle und sendet die einzelnen Daten an eine bestimmte ID des Kafka Senders. Der Consumer abboniert auf diese ID. Wichtig ist, dass der Consumer nur Nachrichten des Producers beachtet, die nach dem Abonnement gesendet werden.
+Die verschiedenen Producer und Consumer für die Passantenfrequenzen und Corona-Fallzahlen werden im Folgenden beschrieben.
+
+#### **Producer für Passantenfrequenzen**
+*von Tim Grohmann*
+
+#### **Consumer für Passantenfrequenzen**
+*von Tim Grohmann*
+
+#### **Producer für Corona-Fallzahlen**
+*von Niclas Kaufmann*
+
+Der Producer für die Corona-Fallzahlen ist in der Python-Datei `producer-corona.py` implentiert und hat den folgenden Aufbau (die Print-Befehle wurden der Übersichthalber entfernt): 
+
+```python
+import kafka
+import requests
+import json
+
+json_data = requests.get(url='https://api.covid19api.com/dayone/country/germany/status/confirmed').json()
+
+producer = kafka.KafkaProducer()
+
+for i, line in enumerate(json_data):
+    producer.send('corona', value=bytearray(json.dumps(line), encoding='utf-8'), key=bytearray(str(i), encoding='utf-8'))
+```
+
+Zu erst wird ein HTTP-Request an die COVID 19 API gestellt, der sich die Corona-Fallzahlen abfragt. Als nächstes wird ein Producer initialisiert. Da der Kafka-Server auf der Standard-Adresse `localhost:9092` läuft, muss sie nicht weiter angegeben werden. Der Producer sendet für jedes Objekt des JSON-Arrays einen geparsten String an die ID `corona`.
+
+#### **Consumer für Corona-Fallzahlen**
+*von Niclas Kaufmann*
+
+In der Datei `consumer-corona.py` wird der Consumer für die Corona-Fallzahlen implementiert. Im Folgenden wird der Inhalt der Datei gezeigt (die Print-Befehle wurden der Übersichthalber entfernt):
+
+```py
+import kafka
+from pymongo import MongoClient
+import json
+from datetime import datetime
+
+consumer = kafka.KafkaConsumer('corona')
+
+client = MongoClient()
+collection = client['bigdata']['corona-deutschland']
+
+for message in consumer:
+    values = json.loads(message.value.decode('utf-8'))
+    try:
+        collection.insert_one({
+            'Country': values['Country'],
+            'CountryCode': values['CountryCode'],
+            'Cases': values['Cases'],
+            'Status': values['Status'],
+            'Date': datetime.strptime(values['Date'], '%Y-%m-%dT%H:%M:%SZ'),
+        })
+    except Exception as e:
+        print(e)
+        print(values)
+```
+
+Als erstes wird der Consumer auf die ID `corona` und die MongoDB-Datenbank initialisiert. Die Kollektion, in der die Daten gespeichert werden sollen, ist `bigdata.corona-deutschland`.
+
+Nun wird für jede Nachricht, die der Consumer empfängt, folgendes getan: Als erstes wird die Nachricht zu einem JSON-Objekt geparst. Nun wird versucht, das geparste Objekt in die Datenbank einzufügen. Bis auf das Attribut `Date` sind alle Attribute Strings, müssen also nicht weiter verändert werden. `Date` wird als Datumsobjekt in die Datenbank eingefügt. Falls ein Fehler auftritt, wird der Fehler sowie das geparste Objekt ausgegeben.
+
+Der Consumer hat eine unendliche Laufzeit, da er ja nicht weiß, wann die letzte Nachricht ankam. Daher muss der Prozess manuell beendet werden.
 
 ### 3.3. Transformation der Corona-Fallzahlen
 
