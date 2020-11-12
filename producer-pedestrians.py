@@ -3,10 +3,8 @@ import kafka
 producer = kafka.KafkaProducer()
 
 paths = [
-    #'data/berlin-kurfürstendamm nordseite (ost)-20181109-20201031-day.csv',
     'data/frankfurt a.m.-goethestraße-20180930-20201031-day.csv',
     'data/stuttgart-königstraße (mitte)-20180930-20201031-day.csv',
-    #'data/karlsruhe-kaiserstraße (mitte)-20181212-20201031-day.csv',
     'data/düsseldorf-königsallee ostseite (süd)-20180930-20201031-day.csv',
     'data/frankfurt a.m.-große bockenheimer straße-20180930-20201031-day.csv'
 ]

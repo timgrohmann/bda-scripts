@@ -96,12 +96,81 @@ Die verschiedenen Producer und Consumer für die Passantenfrequenzen und Corona-
 *von Tim Grohmann*
 
 Die Passentenfrequenzen werden aus mehreren CSV-Dateien ausgelesen, deren relative Dateipfade in einem Array angegeben werden können.
+
+```python
+import kafka
+
+producer = kafka.KafkaProducer()
+
+paths = [
+    'data/frankfurt a.m.-goethestraße-20180930-20201031-day.csv',
+    'data/stuttgart-königstraße (mitte)-20180930-20201031-day.csv',
+    'data/düsseldorf-königsallee ostseite (süd)-20180930-20201031-day.csv',
+    'data/frankfurt a.m.-große bockenheimer straße-20180930-20201031-day.csv'
+]
+```
+
 Aus jeder dieser Datei wird nun Zeile für Zeile gelesen (die Kopfzeile muss dabei übersprungen werden) und der Inhalt jeder Zeile als UTF-8-kodierter String an das Kafka-Topic `peoplecount` gesendet.
+
+```python
+for path in paths:
+    dataset = open(path, encoding='utf-8')
+    lines = dataset.readlines()[1:]
+
+    for i, line in enumerate(lines):
+        print(line)
+        producer.send('peoplecount', value=bytearray(line, encoding='utf-8'))
+```
 
 #### **Consumer für Passantenfrequenzen**
 *von Tim Grohmann*
 
+```python
+import kafka
+import datetime as dt
+from pymongo import MongoClient
+
+# Verbindung mit Kafka für Topic 'peoplecount'
+consumer = kafka.KafkaConsumer('peoplecount')
+
+# Verbindung mit Mongo-Server für Collection 'peoplecount'
+client = MongoClient()
+pp = client['bigdata']['peoplecount']
+
+# Löschen bereits vorhandener Daten, damit keine Duplikate beim mehrfachen Ausführen entstehen
+pp.delete_many({})
+
+# Initialisieren eines leeren Dictionairies, in das später Werte für moving average abgelegt werden
+sums = {}
+```
+
 Im entsprechenden Consumer werden diese Daten wieder zurück in einen String konvertiert und nach dem Trennzeichen `;` aufgesplittet. Eine einzelne Zeile aus der CSV-Datei ist jetzt also als Array von Strings vorhanden.
+
+```python
+for message in consumer:
+    values = message.value.decode('utf-8').split(';')
+    place = values[0]
+
+    count = int(values[3])
+    if count == 0:
+        if place not in sums:
+            continue
+        else:
+            val = sums[place]
+            # calculate moving average
+            count = round(float(val['total'])/val['count'])
+    else:
+        if place not in sums:
+            sums[place] = {'count': 1, 'total': count}
+        else:
+            sums[place]['count'] += 1
+            sums[place]['total'] += count
+
+    pp.insert_one({
+        'day': dt.datetime.strptime(values[1][:-6],"%Y-%m-%d %H:%M:%S"),
+        'count': count,
+    })
+```
 
 In den Datensätzen sind einige Tage vorhanden, an denen 0 Fußgänger gezählt werden. Das ist äußerst unwahrscheinlich und demzufolge auf eine Systemstörung zurückzuführen.
 Damit diese fehlerhaften Datensätze die Analyse nicht verfälschen, werden sie im Consumer mit dem *moving average* des jeweiligen Standortes aufgefüllt.

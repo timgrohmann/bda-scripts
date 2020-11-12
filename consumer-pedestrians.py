@@ -2,12 +2,17 @@ import kafka
 import datetime as dt
 from pymongo import MongoClient
 
+# Verbindung mit Kafka für Topic 'peoplecount'
 consumer = kafka.KafkaConsumer('peoplecount')
 
+# Verbindung mit Mongo-Server für Collection 'peoplecount'
 client = MongoClient()
 pp = client['bigdata']['peoplecount']
+
+# Löschen bereits vorhandener Daten, damit keine Duplikate beim mehrfachen Ausführen entstehen
 pp.delete_many({})
 
+# Initialisieren eines leeren Dictionairies, in das später Werte für moving average abgelegt werden
 sums = {}
 
 for message in consumer:
