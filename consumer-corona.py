@@ -7,6 +7,7 @@ consumer = kafka.KafkaConsumer('corona')
 
 client = MongoClient()
 collection = client['bigdata']['corona-deutschland']
+collection.delete_many({})
 
 count = 0
 
