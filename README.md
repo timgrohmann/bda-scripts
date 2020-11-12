@@ -2,6 +2,8 @@
 
 ## 1. Aufgabenstellung
 
+*von Niclas Kaufmann*
+
 ## 2. Datenquellen
 
 In dem Projekt werden insgesamt zwei Datenquellen verwendet, welche im Folgenden näher erläutert werden sollen.
@@ -82,6 +84,7 @@ Als Beispiel soll das Objekt für den 22. Juli 2020 (generiert am 05. November 2
 ## 3. Umsetzung
 
 ### 3.1. Verwendete Technologien
+*von Niclas Kaufmann*
 
 ### 3.2. Importieren der Daten in die Datenbank mit Kafka
 *von Niclas Kaufmann*
@@ -190,7 +193,7 @@ for value in rawDataCollection.find():
 Es werden die Module `MongoClient` und `Datetime` benötigt. Zu erst wird eine Verbindung zu der MongoDB-Datenbank aufgebaut: Da keine URL angegeben wird, wird die Standard-URL `mongodb://localhost:27017` verwendet. Für jedes Dokument aus der alten Kollektion `bigdata.corona-deutschland` wird das Dokument des Vortages gesucht. Wird kein Vortag gefunden wird an das Dokument des Tages das Attribut `neueFaelle` auf `None` gesetzt und angefügt. Andernfalls berechnet sich `neueFaelle` indem von den Fallzahlen des Tages die Fallzahlen des Vortages abgezogen werden. Zum Schluss wird das Dokument mit dem aktualisierten Attribut in die Kollektion `bigdata.corona-deutschland-neue-faelle` geschrieben.
 
 ### 3.4. Auswertung
-
-## Probleme / Lösungen
+*von Tim Grohmann*
 
 ## Fazit
+*von Tim Grohmann*
