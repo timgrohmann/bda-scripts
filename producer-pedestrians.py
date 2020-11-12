@@ -17,4 +17,4 @@ for path in paths:
 
     for i, line in enumerate(lines):
         print(line)
-        producer.send('peoplecount', value=bytearray(line, encoding='utf-8'), key=bytearray(str(i), encoding='utf-8'))
+        producer.send('peoplecount', value=bytearray(line, encoding='utf-8'), key=bytearray(str(i + 1), encoding='utf-8'))
