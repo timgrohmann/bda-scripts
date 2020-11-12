@@ -264,5 +264,39 @@ Es werden die Module `MongoClient` und `Datetime` benötigt. Zu erst wird eine V
 ### 3.4. Auswertung
 *von Tim Grohmann*
 
+Die Auswertung der Daten findet im angefügten Pyhton-Notebook `visualization.ipynb` statt.
+
+Das genaue Vorgehen ist dort größtenteils direkt im Code kommentiert, dehalb erfolgt an dieser Stelle nur eine grobe Übersicht über die einzelnen Schritte.
+
+Zunächst werden die benötigten Aggreagtionen der Daten mithilfe einer MongoDB-Pipeline vorgenommen.
+Dafür werden beide Datensätze nach Kalenderwoche gruppiert, indem das entsprechende Datumsfeld (`day` bzw. `date`) in das Format `%Y-%U` (vierstellige Jahresangabe und zweistellige KW) konvertiert wird.
+Innerhalb der Gruppe wird dann mit der `$sum`-Funktion die Gesamtzahl an Passanten bzw. Corona-Fällen aggregiert.
+
+Als nächstes müssen die Daten in ein geeignetes Format zum Anzeigen gebracht werden.
+Da die Corona-Pandemie ein sehr aktuelles Thema ist, ist eine Aufteilung in Jahre (Vergleich 2019/2020) nicht sehr hilfreich, da dann die Monate November und Dezember nicht hinreichend betrachtet werden können.
+Demzufolge haben wir uns dafür entschieden, den Schnitt zwischen KW 43 (ca. letzte Oktoberwoche) und KW 44 (ca. erste Novemberwoche) zu legen.
+Eine weitere Besonderheit ist der Jahreswechsel. Der 31.12.2018 war ein Montag, der 31.12.2019 ein Dienstag.
+Deshalb sind die jeweils letze bzw. erste Woche des Jahres (Woche 52 bzw. 0) keine vollständigen Wochen mit 7 Tagen.
+Um damit umzugehen werden die Passantenzahlen der Woche 0 zur Woche 52 addiert und die Woche 0 wird aus der Betrachtung entfernt.
+
+Die Passantendaten müssen außerdem in zwei Teile getrennt werden, um in einer Grafik darstellbar zu sein.
+Diese Teile reichen, wie oben begründet, von 2018-44 bis 2019-43 und von 2019-44 bis 2020-43.
+
+Diese beiden Verläufe werden in einem Diagramm gemeinsam dargestellt, damit der Unterschied zwischen dem Jahresverlauf ohne und mit Corona-Pandemie erkennbar ist.
+Die blaue Linke ist dabei der *normale* Verlauf, die orangene Line beschreibt die letzten 52 Wochen bis Ende Oktober 2020.
+
+Zusätzlich wird ein zweites Diagramm erzeugt, indem die Differenz der beiden Zeiträume für Passentenfrequenzen mit der Entwicklung der Corona-Pandemie in 2020 gezeigt wird.
+Die grüne Kennlinie ist dabei die Differenz der orangenen Linie zur blauen und geht daher auch unter 0, da die Passentenfrequenzzahlen um die Weihnachtszeit und im Januar offenbar 2019/2020 größer waren als 2018/2019.
+
+Die rote Kennlinie ist der Verlauf der Corona-Neuinfektionen.
+
+![Graph der Daten](results/graph.png)
+
+Es ist zwischen KW 10 und KW 20 (also der Zeitraum März-April 2020, *erste Welle* der Corona-Pandemie in Deutschland) eine relativ gute Übereinstimmung des Verlaufes dieser beiden Kennlinien zu erkennen.
+Auch am Ende des Datensatzes ist eine Steigerung in beiden Graphen zu erkennen, diese lässt sich auf die gerade beginnende *zweite Welle* zurückführen.
+
 ## Fazit
 *von Tim Grohmann*
+
+Insgesamt war die Datenauswertung mit den gewählten Technologien schnell und verhältnismäßig einfach vorzunhmen.
+Hervorzuheben ist die gute Anpassbarkeit der Diagramme, die sich mithilfe von `matplotlib` leicht erstellen lassen.
