@@ -7,7 +7,35 @@
 In dem Projekt werden insgesamt zwei Datenquellen verwendet, welche im Folgenden näher erläutert werden sollen.
 
 ### 2.1. Passantenfrequenzen
+
 *von Tim Grohmann*
+
+Daten über die Passentenfrequenzen in Deutschen Innenstädten werden von *hystreet.com*, einer Initiative der Aachener Grundvermögen, erhoben und sind bis zu stundengenau frei von ebendieser Website als CSV-Dateien herunterladbar.
+
+Für dieses Projekt war ein großer Abdeckungszeitraum der Datenquellen wichtig, da der Zeitraum von Oktober 2018 - September 2019 mit dem Zeitraum Oktober 2019 - Septeber 2020 verglichen wird.
+Deshalb kommen viele Messpunkte von *hystreet* nicht in Frage, da diese erst nach Oktober 2018 installiert wurden.
+Um ein möglichst aussagekräftiges Ergebnis zu erhalten, wurden für die Auswertung 4 Messpunkte miteineander kombiniert:
+
+- Frankfurt/M, Goethestraße
+- Frankfurt/M, Große Bockenheimer Straße
+- Düsseldorf, KÖ
+- Stuttgart, Königstraße
+
+So soll verhindert werden, das einzelne lokale Ereignisse (Demonstation, Stadtfest, etc.) zu großen Ausreißern in den Daten führen.
+
+Da die Fluktuation von Passantenzahlen während eines Tages für diese Betrachtung irrelevant sind, wurden nur tagesgenaue CSVs von hystreet exportiert. Die Datensätze in diesen CSV-Dateien sind wie folgt strukturiert.
+
+| Spalte                  | Bedeutung                                                      |
+| ----------------------- | -------------------------------------------------------------- |
+| **location**            | Standort der Messung, in einer Datei jeweils gleich            |
+| **time of measurement** | Zeitpunkt der Messung, jeweils 00.00 Uhr des betroffenen Tages |
+| weekday                 | Wochentag der Messung                                          |
+| **pedestrians count**   | Anzahl der Fußgänger an diesem Tag                             |
+| temperature in ºc       | Temperatur im Messzeitraum                                     |
+| weather condition       | Wetterverhältnisse im Messzeitraum                             |
+| incidents               | besondere Vorkommnisse (Sensorausfall o.ä.)                    |
+
+Die für diese Auswertung relevanten Spalten wurden **fett** markiert.
 
 ### 2.2. Coronafallzahlen
 
@@ -64,8 +92,18 @@ Die verschiedenen Producer und Consumer für die Passantenfrequenzen und Corona-
 #### **Producer für Passantenfrequenzen**
 *von Tim Grohmann*
 
+Die Passentenfrequenzen werden aus mehreren CSV-Dateien ausgelesen, deren relative Dateipfade in einem Array angegeben werden können.
+Aus jeder dieser Datei wird nun Zeile für Zeile gelesen (die Kopfzeile muss dabei übersprungen werden) und der Inhalt jeder Zeile als UTF-8-kodierter String an das Kafka-Topic `peoplecount` gesendet.
+
 #### **Consumer für Passantenfrequenzen**
 *von Tim Grohmann*
+
+Im entsprechenden Consumer werden diese Daten wieder zurück in einen String konvertiert und nach dem Trennzeichen `;` aufgesplittet. Eine einzelne Zeile aus der CSV-Datei ist jetzt also als Array von Strings vorhanden.
+
+In den Datensätzen sind einige Tage vorhanden, an denen 0 Fußgänger gezählt werden. Das ist äußerst unwahrscheinlich und demzufolge auf eine Systemstörung zurückzuführen.
+Damit diese fehlerhaften Datensätze die Analyse nicht verfälschen, werden sie im Consumer mit dem *moving average* des jeweiligen Standortes aufgefüllt.
+Dazu werden in einem Dictionary `sums` mit dem Namen des Standorts als Schlüssel ein weiteres Dictionary abgelegt, das zum einen die Menge gezählter Tage (`count`) und zum anderen die kumulative Personenzahl (`total`) enthält.
+Sollte im Consumer nun ein Datensatz mit einer vemeintlichen Personenzahl von 0 gelesen, wird nicht diese 0 in die Datenbank geschrieben, sondern der bisherige Durchschnitt `total / count`.
 
 #### **Producer für Corona-Fallzahlen**
 *von Niclas Kaufmann*
