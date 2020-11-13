@@ -16,11 +16,11 @@ Daten über die Passentenfrequenzen in Deutschen Innenstädten werden von *hystr
 
 Für dieses Projekt war ein großer Abdeckungszeitraum der Datenquellen wichtig, da der Zeitraum von Oktober 2018 - September 2019 mit dem Zeitraum Oktober 2019 - Septeber 2020 verglichen wird.
 Deshalb kommen viele Messpunkte von *hystreet* nicht in Frage, da diese erst nach Oktober 2018 installiert wurden.
-Um ein möglichst aussagekräftiges Ergebnis zu erhalten, wurden für die Auswertung 4 Messpunkte miteineander kombiniert:
+Um ein möglichst aussagekräftiges Ergebnis zu erhalten, wurden für die Auswertung 4 Messpunkte miteinander kombiniert:
 
 - Frankfurt/M, Goethestraße
 - Frankfurt/M, Große Bockenheimer Straße
-- Düsseldorf, KÖ
+- Düsseldorf, Königsallee
 - Stuttgart, Königstraße
 
 So soll verhindert werden, das einzelne lokale Ereignisse (Demonstation, Stadtfest, etc.) zu großen Ausreißern in den Daten führen.
@@ -83,8 +83,21 @@ Als Beispiel soll das Objekt für den 22. Juli 2020 (generiert am 05. November 2
 
 ## 3. Umsetzung
 
-### 3.1. Verwendete Technologien
+### 3.1. Lösungsarchitektur
 *von Niclas Kaufmann*
+
+In dem nachfolgendem Schema soll die Lösungsarchitektur dargestellt werden:
+
+![Lösungsarchitektur](results/solution_architecture.png)
+
+Die beiden Producer importieren die Datenquellen und senden sie als Nachrichten an Apache Kafka, welches eine Open-Source-Anwendung zur Verarbeitung von Datenströmen ist.
+
+Die Consumer abbonieren auf ein Topic im Kafka-Server und erhalten danach alle eingespielten Nachrichten der Producer auf das Topic. Anschließend laden die Consumer die einzelnen Nachrichten in die MongoDB als Dokumente. MongoDB ist eine dokumentenorientierte NoSQL-Datenbank.
+
+Sind die Daten in die MongoDB importiert, müssen die Corona-Fallzahlen noch transformiert werden. Die Fallzahlen liegen als kumulierte Werte vor, es werden aber die täglichen neuen Fallzahlen benötigt. Diese Transformation wird von einem Python-Skript durchgeführt.
+
+Anschließend wird die Auswertung der Daten in einem Jupyter Notebook ausgeführt, das die Daten aus der MongoDB lädt. Jupyter Notebook ist eine web-basierte interaktive Python-Umgebung.
+
 
 ### 3.2. Importieren der Daten in die Datenbank mit Kafka
 *von Niclas Kaufmann*
