@@ -1,4 +1,28 @@
-(Platzhalter Deckblatt, TOC)
+# Korrelationsanalyse zwischen den Corona-Fallzahlen und den Passantenaufkommen in deutschen Großstädten
+
+**Ein Projekt von**
+
+| Nachname | Vorname | Matrikelnummer |
+| -------- | ------- | -------------- |
+| Grohmann | Tim     | xxx            |
+| Kaufmann | Niclas  | xxx            |
+
+**Im Kurs *Big Data Analytics***
+
+**an der *Dualen Hochschule Baden-Württemberg Mannheim*.**
+
+## Inhaltsverzeichnis
+
+  - [1. Aufgabenstellung](#1-aufgabenstellung)
+  - [2. Datenquellen](#2-datenquellen)
+    - [2.1. Passantenfrequenzen](#21-passantenfrequenzen)
+    - [2.2. Coronafallzahlen](#22-coronafallzahlen)
+  - [3. Umsetzung](#3-umsetzung)
+    - [3.1. Lösungsarchitektur](#31-lösungsarchitektur)
+    - [3.2. Importieren der Daten in die Datenbank mit Kafka](#32-importieren-der-daten-in-die-datenbank-mit-kafka)
+    - [3.3. Transformation der Corona-Fallzahlen](#33-transformation-der-corona-fallzahlen)
+    - [3.4. Auswertung](#34-auswertung)
+  - [4. Fazit](#4-fazit)
 
 ## 1. Aufgabenstellung
 
@@ -88,7 +112,7 @@ Als Beispiel soll das Objekt für den 22. Juli 2020 (generiert am 05. November 2
 
 In dem nachfolgendem Schema soll die Lösungsarchitektur dargestellt werden:
 
-![Lösungsarchitektur](results/solution_architecture.png)
+![Lösungsarchitektur](images/solution_architecture.png)
 
 Die beiden Producer importieren die Datenquellen und senden sie als Nachrichten an Apache Kafka, welches eine Open-Source-Anwendung zur Verarbeitung von Datenströmen ist.
 
@@ -303,12 +327,12 @@ Die grüne Kennlinie ist dabei die Differenz der orangenen Linie zur blauen und 
 
 Die rote Kennlinie ist der Verlauf der Corona-Neuinfektionen.
 
-![Graph der Daten](results/graph.png)
+![Graph der Daten](images/graph.png)
 
 Es ist zwischen KW 10 und KW 20 (also der Zeitraum März-April 2020, *erste Welle* der Corona-Pandemie in Deutschland) eine relativ gute Übereinstimmung des Verlaufes dieser beiden Kennlinien zu erkennen.
 Auch am Ende des Datensatzes ist eine Steigerung in beiden Graphen zu erkennen, diese lässt sich auf die gerade beginnende *zweite Welle* zurückführen.
 
-## Fazit
+## 4. Fazit
 *von Tim Grohmann*
 
 Insgesamt war die Datenauswertung mit den gewählten Technologien schnell und verhältnismäßig einfach vorzunhmen.
