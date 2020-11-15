@@ -28,6 +28,17 @@
 
 *von Niclas Kaufmann*
 
+In diesem Projekt soll untersucht werden, ob in Deutschland eine Korrelation zwischen den Corona-Fallzahlen und den Passantenaufkommen in Fußgängerzonen existiert. Die Fallzahlen gelten für die gesamte Bundesrepublik Deutschland und die Daten für die Passantenfrequenzen stammen aus großen Fußgängerzonen in deutschen Großstädten.
+
+Es soll ein Arbeitsablauf geschrieben werden, der sowohl ein *Extract, Load, Transform* (ELT)-Prozess als auch eine Auswertung abbildet:
+1. Die Daten werden aus den beiden Datenquellen extrahiert.
+2. Die extrahierten Datenquellen sollen in die Datenbank geladen werden.
+3. Die Corona-Fallzahlen müssen noch transformiert werden, damit sie ausgewertet werden.
+4. Anschließend soll eine Auswertung geschrieben werden, die die Daten aus der Datenbank liest und ein anschauliches Diagramm erstellt.
+
+
+Am Ende dieser Arbeit soll die Auswertung gedeutet und die Frage geklären werden, ob in Deutschland eine Korrelation zwischen den Corona-Fallzahlen und den Passantenaufkommen existiert und wie diese ausfällt.
+
 ## 2. Datenquellen
 
 In dem Projekt werden insgesamt zwei Datenquellen verwendet, welche im Folgenden näher erläutert werden sollen.
