@@ -13,5 +13,5 @@ count = 0
 for i, line in enumerate(json_data):
     count += 1
     print('sending message, #', count, i)
-    producer.send('corona', value=bytearray(json.dumps(line), encoding='utf-8'), key=bytearray(str(i + 1), encoding='utf-8'))
+    producer.send('corona', value=bytearray(json.dumps(line), encoding='utf-8'))
 

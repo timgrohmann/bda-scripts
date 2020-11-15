@@ -28,7 +28,7 @@
 
 *von Niclas Kaufmann*
 
-In diesem Projekt soll untersucht werden, ob in Deutschland eine Korrelation zwischen den Corona-Fallzahlen und den Passantenaufkommen in Fußgängerzonen existiert. Die Fallzahlen gelten für die gesamte Bundesrepublik Deutschland und die Daten für die Passantenfrequenzen stammen aus großen Fußgängerzonen in deutschen Großstädten.
+In diesem Projekt soll untersucht werden, ob in Deutschland eine Korrelation zwischen den Corona-Fallzahlen und den Passantenaufkommen in Fußgängerzonen existiert. Die Fallzahlen gelten für die gesamte Bundesrepublik Deutschland und die Daten für die Passantenfrequenzen stammen aus zentralen Fußgängerzonen in deutschen Großstädten.
 
 Es soll ein Arbeitsablauf geschrieben werden, der sowohl ein *Extract, Load, Transform* (ELT)-Prozess als auch eine Auswertung abbildet:
 1. Die Daten werden aus den beiden Datenquellen extrahiert.
@@ -47,7 +47,7 @@ In dem Projekt werden insgesamt zwei Datenquellen verwendet, welche im Folgenden
 
 *von Tim Grohmann*
 
-Daten über die Passentenfrequenzen in Deutschen Innenstädten werden von *hystreet.com*, einer Initiative der Aachener Grundvermögen, erhoben und sind bis zu stundengenau frei von ebendieser Website als CSV-Dateien herunterladbar.
+Daten über die Passentenfrequenzen in deutschen Innenstädten werden von *hystreet.com*, einer Initiative der Aachener Grundvermögen, erhoben und sind bis zu stundengenau von ebendieser Website als CSV-Dateien frei herunterladbar.
 
 Für dieses Projekt war ein großer Abdeckungszeitraum der Datenquellen wichtig, da der Zeitraum von Oktober 2018 - September 2019 mit dem Zeitraum Oktober 2019 - Septeber 2020 verglichen wird.
 Deshalb kommen viele Messpunkte von *hystreet* nicht in Frage, da diese erst nach Oktober 2018 installiert wurden.
@@ -78,7 +78,7 @@ Die für diese Auswertung relevanten Spalten wurden **fett** markiert.
 
 *von Niclas Kaufmann*
 
-Die täglichen Corona-Fallzahlen für Deutschland werden von der COVID 19 API (https://covid19api.com/) bereitgestellt. Diese Daten stammen von dem Coronavirus Resource Center der Johns Hopkins Univerity in Maryland.
+Die täglichen Corona-Fallzahlen für Deutschland werden von der COVID 19 API (https://covid19api.com/) bereitgestellt. Diese Daten stammen von dem *Coronavirus Resource Center* der Johns Hopkins University in Maryland.
 
 Die API unterstützt verschiedene Endpunkte, um Daten zu den Fallzahlen abzufragen. Die kostenlose Variante benötigt keinen API-Schlüssel, um auf die Daten zuzugreifen. Für das Projekt wird der Endpunkt `/dayone/country/:country/status/confirmed` verwendet. Dieser Endpunkt gibt für jeden Tag nach der ersten Aufzeichnung die Fallzahlen zurück, die bestätigt sind. Für Deutschland (`country := 'germany'`) werden also alle Tage, ab dem 27. Januar 2020 zurückgegeben.
 
@@ -127,7 +127,7 @@ In dem nachfolgendem Schema soll die Lösungsarchitektur dargestellt werden:
 
 Die beiden Producer importieren die Datenquellen und senden sie als Nachrichten an Apache Kafka, welches eine Open-Source-Anwendung zur Verarbeitung von Datenströmen ist.
 
-Die Consumer abbonieren auf ein Topic im Kafka-Server und erhalten danach alle eingespielten Nachrichten der Producer auf das Topic. Anschließend laden die Consumer die einzelnen Nachrichten in die MongoDB als Dokumente. MongoDB ist eine dokumentenorientierte NoSQL-Datenbank.
+Die Consumer abonnieren auf ein Topic im Kafka-Server und erhalten danach alle eingespielten Nachrichten der Producer auf das Topic. Anschließend laden die Consumer die einzelnen Nachrichten in die MongoDB als Dokumente. MongoDB ist eine dokumentenorientierte NoSQL-Datenbank.
 
 Sind die Daten in die MongoDB importiert, müssen die Corona-Fallzahlen noch transformiert werden. Die Fallzahlen liegen als kumulierte Werte vor, es werden aber die täglichen neuen Fallzahlen benötigt. Diese Transformation wird von einem Python-Skript durchgeführt.
 
@@ -137,7 +137,7 @@ Anschließend wird die Auswertung der Daten in einem Jupyter Notebook ausgeführ
 ### 3.2. Importieren der Daten in die Datenbank mit Kafka
 *von Niclas Kaufmann*
 
-Die Datenquellen (beschrieben in Kapitel 2) werden mit Hilfe von Kafka in die Datenbank geladen. Zuerst lädt der Producer die Datenquelle und sendet die einzelnen Daten an ein bestimmtes Topic des Kafka Senders. Der Consumer abboniert auf dieses Topic. Wichtig ist, dass der Consumer nur Nachrichten des Producers beachtet, die nach dem Abonnement gesendet werden.
+Die Datenquellen (beschrieben in Kapitel 2) werden mit Hilfe von Kafka in die Datenbank geladen. Zuerst lädt der Producer die Datenquelle und sendet die einzelnen Daten an ein bestimmtes Topic des Kafka Senders. Der Consumer abonniert auf dieses Topic. Wichtig ist, dass der Consumer nur Nachrichten des Producers beachtet, die nach dem Abonnement gesendet werden.
 Die verschiedenen Producer und Consumer für die Passantenfrequenzen und Corona-Fallzahlen werden im Folgenden beschrieben.
 
 #### **Producer für Passantenfrequenzen**
@@ -240,10 +240,10 @@ json_data = requests.get(url='https://api.covid19api.com/dayone/country/germany/
 producer = kafka.KafkaProducer()
 
 for i, line in enumerate(json_data):
-    producer.send('corona', value=bytearray(json.dumps(line), encoding='utf-8'), key=bytearray(str(i), encoding='utf-8'))
+    producer.send('corona', value=bytearray(json.dumps(line), encoding='utf-8'))
 ```
 
-Zu erst wird ein HTTP-Request an die COVID 19 API gestellt, der sich die Corona-Fallzahlen abfragt. Als nächstes wird ein Producer initialisiert. Da der Kafka-Server auf der Standard-Adresse `localhost:9092` läuft, muss sie nicht weiter angegeben werden. Der Producer sendet für jedes Objekt des JSON-Arrays einen geparsten String an das Topic `corona`.
+Zuerst wird ein HTTP-Request an die COVID 19 API gestellt, der die Corona-Fallzahlen abfragt. Als nächstes wird ein Producer initialisiert. Da der Kafka-Server auf der Standard-Adresse `localhost:9092` läuft, muss sie nicht weiter angegeben werden. Der Producer sendet für jedes Objekt des JSON-Arrays einen geparsten String an das Topic `corona`.
 
 #### **Consumer für Corona-Fallzahlen**
 *von Niclas Kaufmann*
@@ -260,6 +260,7 @@ consumer = kafka.KafkaConsumer('corona')
 
 client = MongoClient()
 collection = client['bigdata']['corona-deutschland']
+collection.delete_many({})
 
 for message in consumer:
     values = json.loads(message.value.decode('utf-8'))
@@ -276,17 +277,15 @@ for message in consumer:
         print(values)
 ```
 
-Als erstes wird der Consumer auf das Topic `corona` und die MongoDB-Datenbank initialisiert. Die Kollektion, in der die Daten gespeichert werden sollen, ist `bigdata.corona-deutschland`.
+Als erstes wird der Consumer auf das Topic `corona` und die MongoDB-Datenbank initialisiert. Die Kollektion, in der die Daten gespeichert werden sollen, ist `bigdata.corona-deutschland`. Sollten bereits Daten in der Kollektion vorhanden sein, werden sie gelöscht.
 
 Nun wird für jede Nachricht, die der Consumer empfängt, folgendes getan: Als erstes wird die Nachricht zu einem JSON-Objekt geparst. Nun wird versucht, das geparste Objekt in die Datenbank einzufügen. Bis auf das Attribut `Date` sind alle Attribute Strings, müssen also nicht weiter verändert werden. `Date` wird als Datumsobjekt in die Datenbank eingefügt. Falls ein Fehler auftritt, wird der Fehler sowie das geparste Objekt ausgegeben.
-
-Der Consumer hat eine unendliche Laufzeit, da er ja nicht weiß, wann die letzte Nachricht ankam. Daher muss der Prozess manuell beendet werden.
 
 ### 3.3. Transformation der Corona-Fallzahlen
 
 *von Niclas Kaufmann*
 
-Die COVID 19 API gibt die Corona-Fallzahlen nur als kummulierte Werte zurück gibt, für das Projekt werden  aber die täglichen, neuen Fallzahlen benötigt. Daher müssen die Daten transformiert werden. Die Transformation wird in der `transform-corona.py` durchgeführt:
+Die COVID 19 API gibt die Corona-Fallzahlen nur als kumulierte Werte zurück gibt, für das Projekt werden  aber die täglichen, neuen Fallzahlen benötigt. Daher müssen die Daten transformiert werden. Die Transformation wird in der `transform-corona.py` durchgeführt:
 
 ```py
 from pymongo import MongoClient
@@ -316,9 +315,9 @@ Die Auswertung der Daten findet im angefügten Pyhton-Notebook `visualization.ip
 
 Das genaue Vorgehen ist dort größtenteils direkt im Code kommentiert, dehalb erfolgt an dieser Stelle nur eine grobe Übersicht über die einzelnen Schritte.
 
-Zunächst werden die benötigten Aggreagtionen der Daten mithilfe einer MongoDB-Pipeline vorgenommen.
+Zunächst werden die benötigten Aggregationen der Daten mithilfe einer MongoDB-Pipeline vorgenommen.
 Dafür werden beide Datensätze nach Kalenderwoche gruppiert, indem das entsprechende Datumsfeld (`day` bzw. `date`) in das Format `%Y-%U` (vierstellige Jahresangabe und zweistellige KW) konvertiert wird.
-Innerhalb der Gruppe wird dann mit der `$sum`-Funktion die Gesamtzahl an Passanten bzw. Corona-Fällen aggregiert.
+Innerhalb der Gruppe wird dann mit der `$sum`-Funktion die Gesamtzahl an Passanten bzw. Corona-Fällen kumuliert.
 
 Als nächstes müssen die Daten in ein geeignetes Format zum Anzeigen gebracht werden.
 Da die Corona-Pandemie ein sehr aktuelles Thema ist, ist eine Aufteilung in Jahre (Vergleich 2019/2020) nicht sehr hilfreich, da dann die Monate November und Dezember nicht hinreichend betrachtet werden können.
@@ -331,7 +330,7 @@ Die Passantendaten müssen außerdem in zwei Teile getrennt werden, um in einer 
 Diese Teile reichen, wie oben begründet, von 2018-44 bis 2019-43 und von 2019-44 bis 2020-43.
 
 Diese beiden Verläufe werden in einem Diagramm gemeinsam dargestellt, damit der Unterschied zwischen dem Jahresverlauf ohne und mit Corona-Pandemie erkennbar ist.
-Die blaue Linke ist dabei der *normale* Verlauf, die orangene Line beschreibt die letzten 52 Wochen bis Ende Oktober 2020.
+Die blaue Linie ist dabei der Verlauf ohne Corona-Pandemie, die orangene Linie beschreibt die letzten 52 Wochen bis Ende Oktober 2020.
 
 Zusätzlich wird ein zweites Diagramm erzeugt, indem die Differenz der beiden Zeiträume für Passentenfrequenzen mit der Entwicklung der Corona-Pandemie in 2020 gezeigt wird.
 Die grüne Kennlinie ist dabei die Differenz der orangenen Linie zur blauen und geht daher auch unter 0, da die Passentenfrequenzzahlen um die Weihnachtszeit und im Januar offenbar 2019/2020 größer waren als 2018/2019.
@@ -346,7 +345,7 @@ Auch am Ende des Datensatzes ist eine Steigerung in beiden Graphen zu erkennen, 
 ## 4. Fazit
 *von Tim Grohmann*
 
-Insgesamt war die Datenauswertung mit den gewählten Technologien schnell und verhältnismäßig einfach vorzunhmen.
+Insgesamt war die Datenauswertung mit den gewählten Technologien schnell und verhältnismäßig einfach vorzunehmen.
 Hervorzuheben ist die gute Anpassbarkeit der Diagramme, die sich mithilfe von `matplotlib` leicht erstellen lassen.
 
 Inhaltlich ließ sich, wie angenommen, eine Korrelation zwischen dem Rückgang der Passantenfrequenzen in deutschen Fußgängerzonen und den Neufallzahlen der COVID19-Pandemie feststellen.
