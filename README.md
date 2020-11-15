@@ -348,3 +348,5 @@ Auch am Ende des Datensatzes ist eine Steigerung in beiden Graphen zu erkennen, 
 
 Insgesamt war die Datenauswertung mit den gewählten Technologien schnell und verhältnismäßig einfach vorzunhmen.
 Hervorzuheben ist die gute Anpassbarkeit der Diagramme, die sich mithilfe von `matplotlib` leicht erstellen lassen.
+
+Inhaltlich ließ sich, wie angenommen, eine Korrelation zwischen dem Rückgang der Passantenfrequenzen in deutschen Fußgängerzonen und den Neufallzahlen der COVID19-Pandemie feststellen.
