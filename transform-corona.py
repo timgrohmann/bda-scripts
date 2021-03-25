@@ -5,6 +5,8 @@ client = MongoClient()
 rawDataCollection = client['bigdata']['corona-deutschland']
 
 newDataCollection = client['bigdata']['corona-deutschland-neue-faelle']
+newDataCollection.delete_many({})
+
 
 for value in rawDataCollection.find():
     previousDay = rawDataCollection.find_one({ 'Date': (value['Date'] - dt.timedelta(days = 1)) })
