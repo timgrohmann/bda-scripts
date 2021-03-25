@@ -342,6 +342,12 @@ Die rote Kennlinie ist der Verlauf der Corona-Neuinfektionen.
 Es ist zwischen KW 10 und KW 20 (also der Zeitraum März-April 2020, *erste Welle* der Corona-Pandemie in Deutschland) eine relativ gute Übereinstimmung des Verlaufes dieser beiden Kennlinien zu erkennen.
 Auch am Ende des Datensatzes ist eine Steigerung in beiden Graphen zu erkennen, diese lässt sich auf die gerade beginnende *zweite Welle* zurückführen.
 
+#### Update vom 25.03.2021
+
+Da die Corona-Lage sich weiterhin dynamisch entwickelt, haben wir mit aktuellen Daten die Grafik aktualisiert:
+
+![Graph der Daten, Stand März 2021](images/graph_march21.png)
+
 ## 4. Fazit
 *von Tim Grohmann*
 
